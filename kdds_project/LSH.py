@@ -43,8 +43,8 @@ class LSH:
         next_prime = 4294967311
         if (max_shingle_id < len(self.leaves_after_query)):
             raise ValueError("Too many documents")
-        coeff_a = self.pick_random_coeffs(self.num_hashes, max_shingle_id)
-        coeff_b = self.pick_random_coeffs(self.num_hashes, max_shingle_id)
+        coeff_a = self.pick_random_coeffs(self.num_hashes, len(shingle_dict))
+        coeff_b = self.pick_random_coeffs(self.num_hashes, len(shingle_dict))
         for key in shingle_dict.keys():
             signature = []
             for i in range(0, num_hashes):
@@ -114,9 +114,9 @@ class LSH:
                 # Retrieve the estimated similarity value for this pair.
                 estJ = self.estJSim[self.get_triangle_index(i, j)]
                 # If the similarity is above the threshold...
-                if estJ < self.threshold and estJ is not 0:
-                    no_threshold.append(str(self.leaves_after_query[i].id) +" ---> "+ str(self.leaves_after_query[j].id) + 
-                    " has similarity but not over threshold. Similarity is " + str(estJ))
+                #if estJ < self.threshold and estJ is not 0:
+                #    no_threshold.append(str(self.leaves_after_query[i].id) +" ---> "+ str(self.leaves_after_query[j].id) + 
+                #    " has similarity but not over threshold. Similarity is " + str(estJ))
                 if estJ > self.threshold:
                 # Calculate the actual Jaccard similarity for validation.
                     s1 = set(self.calculate_shingles(self.leaves_after_query[i]))

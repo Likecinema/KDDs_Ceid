@@ -10,6 +10,13 @@
             "request": "launch",
             "program": "./main.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: R_tree.py",
+            "type": "python",
+            "request": "launch",
+            "program": "./R_tree.py",
+            "console": "integratedTerminal"
         }
     ]
 }

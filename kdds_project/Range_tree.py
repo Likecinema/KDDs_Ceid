@@ -1,5 +1,6 @@
-from .File_Handler import CorpusDocument
+from .File_Handler import Corpus, CorpusDocument
 from typing import OrderedDict
+
 
 class Tree():
     def __init__(self):
@@ -42,7 +43,7 @@ class Range_tree(Tree):
     - Consists of multiple Binary search trees, that consist of multiple BSTNodes. (more info on BSTNode class)
     - This tree is not balanced in any way
     """
-    def __init__(self,corpus, keywords, reverse=False):
+    def __init__(self,corpus: Corpus, keywords:list, reverse=False):
         super().__init__()
         BSTs = []
         self.corpus = corpus
@@ -122,7 +123,7 @@ class RTNode(Range_tree):
 
     def bottom_up_create(self, li: list):
         """ Takes a list of sorted CorpusDocuments and creates what is finally a Binary Search tree from the bottom up.
-            Much faster than inserting
+            Much faster than inserting. This should work because CorpusDocuments are sorted
         """
         while len(li)>1:
             first = li.pop(0)

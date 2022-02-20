@@ -5,6 +5,8 @@ from random import randint
 import math
 from os import error
 import collections
+from sklearn.decomposition import PCA
+
 
 
 class Document:
@@ -40,7 +42,7 @@ class CorpusDocument(Document):
     """
     def __init__(self, path, keyword=None, id=None):
         super().__init__(path)
-        self.vector: list = []
+        self.tf_idf_vector: list = []
         self.keyword = keyword
         self.tf_idf = None
         self.id = id
@@ -155,9 +157,9 @@ class Corpus:
         """Returns a corpusDocument by name"""
         return self.documents[name]
     def get_sorted_dfs(self) -> OrderedDict:
-        """Returns Document frequences sorted highest-lowest"""
+        """Returns Document frequencies sorted highest-lowest"""
         return OrderedDict(sorted(self.df.items(),key=lambda item: item[1], reverse=True))
-    def get_random_keywords(self,amount) -> list:
+    def get_random_keywords(self,amount:int) -> list:
         """Returns random keywords within 
             (search_upper_bound %, search_lower_bound %) based on document frequency"""
         keywords = []
@@ -184,11 +186,17 @@ class Corpus:
                 self.documents[doc].keyword = ''
     def set_tfidf(self, keyword:str):
         """Sets tf_idf value for a given keyword in every CorpusDocument 
-            (obviously 0 if keyword does not) exist"""
+            (obviously 0 if keyword does not exist)"""
         df_log = math.log2(len(self.documents)/self.df[keyword])
         for doc in self.documents:
             fetched_doc = self.documents[doc].tf
             self.documents[doc].tf_idf = fetched_doc[keyword]*df_log
+    def return_tf_idf(self, keyword:str):
+        """Basically the same as above, but now yields all values"""
+        df_log = math.log2(len(self.documents)/self.df[keyword])
+        for doc in self.documents:
+            fetched_doc = self.documents[doc].tf
+            yield fetched_doc[keyword]*df_log
     def set_upper_bound(self,value: int):
         """Self explanatory"""
         sorted_dfs = list(self.get_sorted_dfs().items())
@@ -197,7 +205,20 @@ class Corpus:
         """Self explanatory"""
         sorted_dfs = list(self.get_sorted_dfs().items())
         self.search_lower_bound = round(len(sorted_dfs) * value )
-
+    def set_tf_idf_vector(self, keywords:list, dims=None):
+        """Creates tf/idf vector for each document. Can reduce dimensionality if needed"""
+        if dims == None:
+            dims = len(keywords)
+        placeholder_var = []
+        for keyword in keywords:
+            placeholder_var.append([*self.return_tf_idf(keyword)])
+        placeholder_var = list(map(list, zip(*placeholder_var)))
+        #reduce dimensions to 2d
+        if (dims < len(keywords)):
+            placeholder_var = PCA(n_components=dims).fit_transform(placeholder_var)
+        for index, item in enumerate(self.documents):
+            self[index].tf_idf_vector = (placeholder_var[index])
+        
 
 
 
